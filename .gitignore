@@ -134,3 +134,6 @@ token.env
 
 # archive
 /archive
+
+# database
+/data/db/database.db
