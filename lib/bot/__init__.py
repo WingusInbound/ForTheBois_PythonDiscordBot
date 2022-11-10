@@ -13,7 +13,7 @@ from datetime import datetime
 from ..db import db
 
 owner_ids = [211318514613616640]
-prefix = "!"
+# prefix = "!"
 cogs = [path.split("\\")[-1][:-3] for path in glob("./lib/cogs/*.py")]
 print(cogs)
 intents = Intents.default()
@@ -21,7 +21,7 @@ intents.message_content = True
 intents.members = True
 
 def get_prefix(bot, message):
-    db.field("SELECT Prefix FROM Guilds WHERE GuildID = ?", message.guild.id)
+    prefix = db.field("SELECT Prefix FROM Guilds WHERE GuildID = ?", message.guild.id)
     return when_mentioned_or(prefix)(bot, message)
 
 class Ready(object):
