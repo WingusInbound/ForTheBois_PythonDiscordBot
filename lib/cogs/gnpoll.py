@@ -1,5 +1,6 @@
 from discord.ext.commands import Bot, Cog
 from discord.ext.commands import command
+from discord.ext import commands
 from discord import Embed
 
 from ..db import db
@@ -14,7 +15,9 @@ class GNPoll(Cog):
     async def on_ready(self):
         print("GNPoll cog listener...")
 
+    
     @command(name="gn-add")
+    @commands.has_any_role("She/Her", "Test Role")
     async def gn_add(self, ctx):
         print("Received gn-add command")
         message = str(ctx.message.content)
