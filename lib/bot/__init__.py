@@ -7,6 +7,7 @@ from apscheduler.triggers.cron import CronTrigger
 from discord.ext.commands import Bot as BotBase
 from discord.ext.commands import CommandNotFound
 from discord.ext.commands import when_mentioned_or
+from discord.ext import commands
 from discord import Intents
 from discord import Embed
 from datetime import datetime
@@ -116,7 +117,14 @@ class Bot(BotBase):
 
     async def on_message(self, message):
         if not message.author.bot:
-            # print(message)
+            #print(message)
             await self.process_commands(message)
+
+    async def on_guild_join(self, guild):
+        guild_id = str(guild.id)
+        command = f"INSERT INTO guilds (GuildID) VALUES ('{guild_id}')"
+        print(command)
+        db.execute(command)
+        db.commit()
 
 bot = Bot()
