@@ -16,8 +16,8 @@ class GNPoll(Cog):
         print("GNPoll cog listener...")
 
     
-    @command(name="gn-add")
-    @commands.has_any_role("She/Her", "Test Role")
+    @command(name="gnadd")
+    @commands.has_any_role("Admin", "Mod")
     async def gn_add(self, ctx):
         print("Received gn-add command")
         message = str(ctx.message.content)
@@ -26,7 +26,8 @@ class GNPoll(Cog):
         db.execute(f"INSERT INTO games (GameName) Values ('{game_name[1]}')")
         db.commit()
     
-    @command(name="gn-del")
+    @command(name="gndel")
+    @commands.has_any_role("Admin", "Mod")
     async def gn_del(self, ctx):
         print("Received gn-del command")
         message = str(ctx.message.content) # thoughts?????
@@ -40,7 +41,8 @@ class GNPoll(Cog):
         db.execute(command)
         db.commit()
 
-    @command(name="gn-update")
+    @command(name="gnupdate")
+    @commands.has_any_role("Admin", "Mod")
     async def gn_update(self, ctx):
         print("Received gn-update command")
         message = str(ctx.message.content)
@@ -50,7 +52,7 @@ class GNPoll(Cog):
         db.execute(f"UPDATE games SET GameName='{game_name}' WHERE GameID={game_id}")
         db.commit()
 
-    @command(name="gn-list")
+    @command(name="gnlist")
     async def gn_list(self, ctx):
         print("Received gn-list command")
         games = db.records("SELECT GameID, GameName FROM games")
