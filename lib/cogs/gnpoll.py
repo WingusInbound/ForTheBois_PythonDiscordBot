@@ -18,7 +18,7 @@ class GNPoll(Cog):
     async def gn_add(self, ctx):
         print("Received gn-add command")
         message = str(ctx.message.content)
-        game_name = message.split(" ")
+        game_name = message.split(" ", 1)
         print(game_name[1])
         db.execute(f"INSERT INTO games (GameName) Values ('{game_name[1]}')")
         db.commit()
@@ -27,7 +27,7 @@ class GNPoll(Cog):
     async def gn_del(self, ctx):
         print("Received gn-del command")
         message = str(ctx.message.content) # thoughts?????
-        game = message.split(" ")
+        game = message.split(" ", 1)
         game_id = game[1]
         record = db.record(f"Select * FROM games WHERE GameID={game_id}")
         print(record)
