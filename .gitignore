@@ -135,5 +135,8 @@ token.env
 # archive
 /archive
 
+# Testing Cogs
+/lib/cogs/testing
+
 # database
 /data/db/database.db

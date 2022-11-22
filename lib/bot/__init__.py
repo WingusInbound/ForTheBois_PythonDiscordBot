@@ -8,6 +8,7 @@ from discord.ext.commands import Bot as BotBase
 from discord.ext.commands import CommandNotFound
 from discord.ext.commands import when_mentioned_or
 from discord.ext import commands
+from discord import app_commands
 from discord import Intents
 from discord import Embed
 from datetime import datetime
@@ -35,7 +36,9 @@ class Ready(object):
         print(f"Cog Loaded: {cog}")
     
     def all_ready(self):
-        return all([getattr(self, cog) for cog in cogs])
+        attributes = all([getattr(self, cog) for cog in cogs])
+        return attributes
+        #return all([getattr(self, cog) for cog in cogs])
 
 class Bot(BotBase):
     def __init__(self):
@@ -53,6 +56,7 @@ class Bot(BotBase):
             if filename.endswith(".py"):
             # cut off the .py from the file name
                 await bot.load_extension(f"lib.cogs.{filename[:-3]}")
+                self.cogs_ready.ready_up(f"{filename[:-3]}")
         
         print("Setup complete.")
     
@@ -77,8 +81,8 @@ class Bot(BotBase):
     async def on_error(self, err, *args, **kwargs):
         if err == "on_command_error":
             await args[0].send("Something went wrong.")
-        channel = self.get_channel(923369111336140850)
-        await channel.send("An error occured.")
+        # channel = self.sget_channel(1041476927929729024)
+        await stdout.send("An error occured.")
         raise
     
     async def on_command_error(self, context, exception):
@@ -87,16 +91,13 @@ class Bot(BotBase):
 
     async def on_ready(self):
         if not self.ready:
-            self.ready = True
             self.guild = self.get_guild(835975742663032852)
-            self.stdout = self.get_channel(923369111336140850)
+            # self.stdout = self.get_channel(1041390584562196512) # Prod Bot
+            self.stdout = self.get_channel(1042993207673372682) # Test Bot
             self.scheduler.start()
             
-            # print("bot ready")
             await self.stdout.send("Now Online!")
-            print(" bot ready...")
-
-            embed = Embed(title="Now Online!", description="For The Bois is now online.", color=0xFF0000, timestamp=datetime.utcnow())
+            embed = Embed(title="Now Online!", description="For The Bois is now online.", color=0x9900FF, timestamp=datetime.utcnow())
             fields = [("Name", "Value", True),
                 ("Another field", "This field is next to the other one.", True),
                 ("A non-inline field", "This field will appear on it's own row.", False)]
@@ -107,22 +108,29 @@ class Bot(BotBase):
             embed.set_thumbnail(url=self.guild.icon.url)
             embed.set_image(url=self.guild.icon.url)
             await self.stdout.send(embed=embed)
-
+            
             while not self.cogs_ready.all_ready():
                 await sleep(0.5)
-
+            
+            print(" bot ready...")
             self.ready = True
         else:
             print("bot reconnected")
 
     async def on_message(self, message):
         if not message.author.bot:
-            #print(message)
             await self.process_commands(message)
 
     async def on_guild_join(self, guild):
         guild_id = str(guild.id)
         command = f"INSERT INTO guilds (GuildID) VALUES ('{guild_id}')"
+        print(command)
+        db.execute(command)
+        db.commit()
+
+    async def on_guild_remove(self, guild):
+        guild_id = str(guild.id)
+        command = f"DELETE FROM guilds WHERE GuildID={guild_id}"
         print(command)
         db.execute(command)
         db.commit()

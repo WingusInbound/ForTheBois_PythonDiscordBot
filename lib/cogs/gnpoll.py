@@ -11,25 +11,29 @@ emojis = ["🇦", "🇧", "🇨", "🇩", "🇪", "🇫", "🇬", "🇭", "🇮"
 class GNPoll(Cog):
     def __init__(self, bot):
         self.bot = bot
+    
     @Cog.listener()
     async def on_ready(self):
-        print("GNPoll cog listener...")
-
-    
-    @command(name="gnadd")
+        print("GNPoll cog ready...")
+    '''
+    @command(name="gnadd", 
+        description='Adds a game to the Gaming Night Poll. \n Usage: [prefix]gnadd [Game Name to Add] \n Example: !gnadd Final Final Fantasy 420', 
+        brief='Adds a game to the Gaming Night Poll.')
     @commands.has_any_role("Admin", "Mod")
     async def gn_add(self, ctx):
-        print("Received gn-add command")
+        print("Received gnadd command")
         message = str(ctx.message.content)
         game_name = message.split(" ", 1)
         print(game_name[1])
         db.execute(f"INSERT INTO games (GameName) Values ('{game_name[1]}')")
         db.commit()
     
-    @command(name="gndel")
+    @command(name="gndel", 
+        description='Deletes a game from the Gaming Night Poll. \n Usage: [prefix]gndel [Game id to Delete] *to get the game id run the command gnlist. \n Example: !gndel 2', 
+        brief='Deletes a game from the Gaming Night Poll.')
     @commands.has_any_role("Admin", "Mod")
     async def gn_del(self, ctx):
-        print("Received gn-del command")
+        print("Received gndel command")
         message = str(ctx.message.content) # thoughts?????
         game = message.split(" ", 1)
         game_id = game[1]
@@ -41,45 +45,48 @@ class GNPoll(Cog):
         db.execute(command)
         db.commit()
 
-    @command(name="gnupdate")
+    @command(name="gnupdate", 
+        description='Updates a game in the Gaming Night Poll. \n Usage: [prefix]gnupdate [Game id to Update] *to get the game id run the command gnlist. \n Example: !gnupdate 2 Final Fantasy 14',
+        brief='Updates a game in the Gaming Night Poll.')
     @commands.has_any_role("Admin", "Mod")
     async def gn_update(self, ctx):
-        print("Received gn-update command")
+        print("Received gnupdate command")
         message = str(ctx.message.content)
         game = message.split(" ")
         game_id = game[1]
         game_name = game[2]
         db.execute(f"UPDATE games SET GameName='{game_name}' WHERE GameID={game_id}")
         db.commit()
-
-    @command(name="gnlist")
+    '''
+    @command(name="gnlist", 
+        description='Lists the games in the Gaming Night Poll. \n Usage: [prefix]gnlist. \n Example: !gnlist',
+        brief='Lists the games in the Gaming Night Poll.')
     async def gn_list(self, ctx):
-        print("Received gn-list command")
+        print("Received gnlist command")
         games = db.records("SELECT GameID, GameName FROM games")
         value1 = ""
         value2 = ""
         for game in games:
-            value1 += f"{game[0]}" + "\n"
-            value2 += f"{game[1]}" + "\n"
+            value1 += f"{game[0]} - {game[1]}" + "\n" # Old - value1 += f"{game[0]}" + "\n"
+            #value2 += f"{game[1]}" + "\n"
             print(f"GameID: {game[0]}")
             print(f"GameName = {game[1]}")
         embed = Embed(title="Gaming Night Games", color=0xFF0000)
-        embed.add_field(name="GameID", value=value1)
-        embed.add_field(name="GameName", value=value2, inline=True)
+        embed.add_field(name="GameID - GameName", value=value1)
         message = await ctx.send(embed=embed)
 
-    @command(name="gnpoll")
+    @command(name="gnpoll", 
+        description='Generates the Gaming Night Poll. \n Usage: [prefix]gnpoll. \n Example: !gnpoll',
+        brief='Generates the Gaming Night Poll.')
     async def gnpoll(self, ctx):
         games = db.records("SELECT GameName FROM games")
-        # print(games)
+        
         value = ""
         i = 0
-        count = 0
         for game in games:
             value += f"{reactions[i]} - " + game[0] + "\n"
-            count += 1
             i += 1
-        embed = Embed(title="Gaming Night Poll", description="Please react for the games you want to play", color=0xFF0000)
+        embed = Embed(title="Gaming Night Poll", description="Please react for the games you want to play", color=0x9900FF)
         embed.add_field(name="Games", value=value)
         message = await ctx.send(embed=embed)
         message = await message.fetch()
